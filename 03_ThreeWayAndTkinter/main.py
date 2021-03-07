@@ -1,3 +1,4 @@
+"15 puzzle with simple GUI"
 import tkinter as tk
 from random import shuffle
 from tkinter import messagebox
@@ -5,6 +6,12 @@ from typing import List
 
 
 def isSolvable(buttonsIdx: List[int]) -> bool:
+    """
+    Check if puzzle with given buttons order is solvable.
+
+    :param buttonsIdx: list with position index for each button and empty cell
+    :returns: True if solvable, False if not
+    """
     ranking = [None]*16
     for i in range(15):
         ranking[buttonsIdx[i]] = i
@@ -24,6 +31,12 @@ def isSolvable(buttonsIdx: List[int]) -> bool:
 
 
 def rotate90(buttonsIdx: List[int]) -> List[int]:
+    """
+    Rotate puzzle by 90 degrees counterclockwise.
+
+    :param buttonsIdx: list with position index for each button and empty cell
+    :returns: list with positions after rotation
+    """
     newButtonsIdx = []
     for i in buttonsIdx:
         row, col = i//4, i%4
@@ -33,14 +46,21 @@ def rotate90(buttonsIdx: List[int]) -> List[int]:
     return newButtonsIdx
 
 
-class Application(tk.Frame):
+class Application(tk.Frame): # pylint: disable=too-many-ancestors
+
+    "Game application"
 
     def __init__(self, master=None):
         super().__init__(master)
         self.grid(sticky='nsew')
         self.createWidgets()
 
-    def checkWinning(self):
+    def checkWinning(self) -> bool:
+        """
+        Check if player have won.
+
+        :returns: True if puzzle is solved, False otherwise
+        """
         for i, button in enumerate(self.numButtons):
             gridInfo = button.grid_info()
             row = i//4 + 1
@@ -50,6 +70,10 @@ class Application(tk.Frame):
         return True
 
     def shuffleButtons(self):
+        """
+        Shuffle buttons with numbers.
+        """
+        # create list with position for each button and empty cell
         buttonsIdx = list(range(16))
         shuffle(buttonsIdx)
         if not isSolvable(buttonsIdx):
@@ -64,9 +88,14 @@ class Application(tk.Frame):
         self.emptyPos[1] = buttonsIdx[-1]%4
 
     def moveButton(self, i):
-        '''move button to emty position (if possible)'''
+        """
+        Move button to empty position (if possible).
+
+        :param i: number of the butoon to move
+        """
         gridInfo = self.numButtons[i].grid_info()
         row, col = gridInfo['row'], gridInfo['column']
+        # if button is adjustent to empty cell, move it to empty cell
         adjPos = {
             (row, col - 1),
             (row, col + 1),
@@ -83,6 +112,9 @@ class Application(tk.Frame):
             self.emptyPos[1] = col
 
     def createWidgets(self):
+        """
+        Create application widgets.
+        """
         # set rows/columns weights to make stretchable interface
         top = self.winfo_toplevel()
         top.rowconfigure(0, weight=1)
