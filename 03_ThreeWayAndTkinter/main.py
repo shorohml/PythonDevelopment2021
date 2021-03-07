@@ -73,15 +73,9 @@ class Application(tk.Frame):
             column=2,
             columnspan=2,
         )
- 
+
         # create buttons with numbers for game logic
-        buttons_idx = list(range(16))
-        shuffle(buttons_idx)
         self.numButtons = [None]*15
-        self.empty_pos = [
-            buttons_idx[-1]//4 + 1,
-            buttons_idx[-1]%4
-        ]
         for i in range(15):
 
             def command(j=i):
@@ -96,12 +90,7 @@ class Application(tk.Frame):
                 text=f'{i + 1}',
                 command=command,
             )
-            self.numButtons[i].grid(
-                row=buttons_idx[i]//4 + 1,
-                column=buttons_idx[i]%4,
-                sticky='nsew'
-            )
-
+        self.shuffleButtons()
 
 if __name__ == '__main__':
     app = Application()
