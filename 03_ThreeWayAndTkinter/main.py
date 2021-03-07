@@ -12,41 +12,43 @@ class Application(tk.Frame):
 
     def checkWinning(self):
         for i, button in enumerate(self.numButtons):
-            grid_info = button.grid_info()
+            gridInfo = button.grid_info()
             row = i//4 + 1
             col = i%4
-            if grid_info['row'] != row or grid_info['column'] != col:
+            if gridInfo['row'] != row or gridInfo['column'] != col:
                 return False
         return True
 
     def shuffleButtons(self):
-        buttons_idx = list(range(16))
-        shuffle(buttons_idx)
-        self.empty_pos = [
-            buttons_idx[-1]//4 + 1,
-            buttons_idx[-1]%4
-        ]
+        buttonsIdx = list(range(16))
+        shuffle(buttonsIdx)
         for i in range(15):
             self.numButtons[i].grid(
-                row=buttons_idx[i]//4 + 1,
-                column=buttons_idx[i]%4,
+                row=buttonsIdx[i]//4 + 1,
+                column=buttonsIdx[i]%4,
                 sticky='nsew'
             )
+        self.emptyPos[0] = buttonsIdx[-1]//4 + 1
+        self.emptyPos[1] = buttonsIdx[-1]%4
 
     def moveButton(self, i):
         '''move button to emty position (if possible)'''
-        grid_info = self.numButtons[i].grid_info()
-        row, col = grid_info['row'], grid_info['column']
-        flag_1 = self.empty_pos[1] == col and (self.empty_pos[0] == row - 1 or self.empty_pos[0] == row + 1)
-        flag_2 = self.empty_pos[0] == row and (self.empty_pos[1] == col - 1 or self.empty_pos[1] == col + 1)
-        if flag_1 or flag_2:
+        gridInfo = self.numButtons[i].grid_info()
+        row, col = gridInfo['row'], gridInfo['column']
+        adjPos = {
+            (row, col - 1),
+            (row, col + 1),
+            (row - 1, col),
+            (row + 1, col),
+        }
+        if tuple(self.emptyPos) in adjPos:
             self.numButtons[i].grid(
-                row=self.empty_pos[0],
-                column=self.empty_pos[1],
+                row=self.emptyPos[0],
+                column=self.emptyPos[1],
                 sticky='nsew'
             )
-            self.empty_pos[0] = row
-            self.empty_pos[1] = col
+            self.emptyPos[0] = row
+            self.emptyPos[1] = col
 
     def createWidgets(self):
         # set rows/columns weights to make stretchable interface
@@ -76,11 +78,12 @@ class Application(tk.Frame):
 
         # create buttons with numbers for game logic
         self.numButtons = [None]*15
+        self.emptyPos = [4, 3]
         for i in range(15):
 
             def command(j=i):
                 self.moveButton(j)
-                # check if player've won
+                # check if player have won
                 if self.checkWinning():
                     messagebox.showinfo(message='You win!')
                     self.shuffleButtons()
@@ -91,6 +94,7 @@ class Application(tk.Frame):
                 command=command,
             )
         self.shuffleButtons()
+
 
 if __name__ == '__main__':
     app = Application()
