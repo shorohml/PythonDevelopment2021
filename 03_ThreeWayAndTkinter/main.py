@@ -1,6 +1,36 @@
 import tkinter as tk
-from tkinter import messagebox
 from random import shuffle
+from tkinter import messagebox
+from typing import List
+
+
+def isSolvable(buttonsIdx: List[int]) -> bool:
+    ranking = [None]*16
+    for i in range(15):
+        ranking[buttonsIdx[i]] = i
+    nSum = 0
+    for i in range(15):
+        if ranking[i] is None:
+            nSum += i//4 + 1
+            continue
+        count = 0
+        for j in range(i + 1, 16):
+            if ranking[j] is None:
+                continue
+            if ranking[j] < ranking[i]:
+                count += 1
+        nSum += count
+    return nSum % 2 == 0
+
+
+def rotate90(buttonsIdx: List[int]) -> List[int]:
+    newButtonsIdx = []
+    for i in buttonsIdx:
+        row, col = i//4, i%4
+        newCol = row
+        newRow = 3 - col
+        newButtonsIdx.append(newRow*4 + newCol)
+    return newButtonsIdx
 
 
 class Application(tk.Frame):
@@ -22,6 +52,8 @@ class Application(tk.Frame):
     def shuffleButtons(self):
         buttonsIdx = list(range(16))
         shuffle(buttonsIdx)
+        if not isSolvable(buttonsIdx):
+            buttonsIdx = rotate90(buttonsIdx)
         for i in range(15):
             self.numButtons[i].grid(
                 row=buttonsIdx[i]//4 + 1,
