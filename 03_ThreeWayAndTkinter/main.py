@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import messagebox
 from random import shuffle
 
 
@@ -9,8 +10,31 @@ class Application(tk.Frame):
         self.grid(sticky='nsew')
         self.createWidgets()
 
+    def checkWinning(self):
+        for i, button in enumerate(self.numButtons):
+            grid_info = button.grid_info()
+            row = i//4 + 1
+            col = i%4
+            if grid_info['row'] != row or grid_info['column'] != col:
+                return False
+        return True
+
+    def shuffleButtons(self):
+        buttons_idx = list(range(16))
+        shuffle(buttons_idx)
+        self.empty_pos = [
+            buttons_idx[-1]//4 + 1,
+            buttons_idx[-1]%4
+        ]
+        for i in range(15):
+            self.numButtons[i].grid(
+                row=buttons_idx[i]//4 + 1,
+                column=buttons_idx[i]%4,
+                sticky='nsew'
+            )
+
     def createWidgets(self):
-        # set rows/columns weights to make interface stretchable
+        # set rows/columns weights to make stretchable interface
         top = self.winfo_toplevel()
         top.rowconfigure(0, weight=1)
         top.columnconfigure(0, weight=1)
@@ -20,7 +44,7 @@ class Application(tk.Frame):
             self.columnconfigure(i, weight=1, minsize=60)
 
         # create New button
-        self.newButton = tk.Button(self, text='New')
+        self.newButton = tk.Button(self, text='New', command=self.shuffleButtons)
         self.newButton.grid(
             row=0,
             column=0,
@@ -39,26 +63,30 @@ class Application(tk.Frame):
         buttons_idx = list(range(16))
         shuffle(buttons_idx)
         self.numButtons = [None]*15
-        empty_pos = [
+        self.empty_pos = [
             buttons_idx[-1]//4 + 1,
             buttons_idx[-1]%4
         ]
         for i in range(15):
 
             def command(j=i):
-                # move button to emty position if possible
+                # move button to emty position (if possible)
                 grid_info = self.numButtons[j].grid_info()
                 row, col = grid_info['row'], grid_info['column']
-                flag_1 = empty_pos[1] == col and (empty_pos[0] == row - 1 or empty_pos[0] == row + 1)
-                flag_2 = empty_pos[0] == row and (empty_pos[1] == col - 1 or empty_pos[1] == col + 1)
+                flag_1 = self.empty_pos[1] == col and (self.empty_pos[0] == row - 1 or self.empty_pos[0] == row + 1)
+                flag_2 = self.empty_pos[0] == row and (self.empty_pos[1] == col - 1 or self.empty_pos[1] == col + 1)
                 if flag_1 or flag_2:
                     self.numButtons[j].grid(
-                        row=empty_pos[0],
-                        column=empty_pos[1],
+                        row=self.empty_pos[0],
+                        column=self.empty_pos[1],
                         sticky='nsew'
                     )
-                    empty_pos[0] = row
-                    empty_pos[1] = col
+                    self.empty_pos[0] = row
+                    self.empty_pos[1] = col
+                # check if player've won
+                if self.checkWinning():
+                    messagebox.showinfo(message='You win!')
+                    self.shuffleButtons()
 
             self.numButtons[i] = tk.Button(
                 self,
