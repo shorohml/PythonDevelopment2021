@@ -33,6 +33,21 @@ class Application(tk.Frame):
                 sticky='nsew'
             )
 
+    def moveButton(self, i):
+        '''move button to emty position (if possible)'''
+        grid_info = self.numButtons[i].grid_info()
+        row, col = grid_info['row'], grid_info['column']
+        flag_1 = self.empty_pos[1] == col and (self.empty_pos[0] == row - 1 or self.empty_pos[0] == row + 1)
+        flag_2 = self.empty_pos[0] == row and (self.empty_pos[1] == col - 1 or self.empty_pos[1] == col + 1)
+        if flag_1 or flag_2:
+            self.numButtons[i].grid(
+                row=self.empty_pos[0],
+                column=self.empty_pos[1],
+                sticky='nsew'
+            )
+            self.empty_pos[0] = row
+            self.empty_pos[1] = col
+
     def createWidgets(self):
         # set rows/columns weights to make stretchable interface
         top = self.winfo_toplevel()
@@ -70,19 +85,7 @@ class Application(tk.Frame):
         for i in range(15):
 
             def command(j=i):
-                # move button to emty position (if possible)
-                grid_info = self.numButtons[j].grid_info()
-                row, col = grid_info['row'], grid_info['column']
-                flag_1 = self.empty_pos[1] == col and (self.empty_pos[0] == row - 1 or self.empty_pos[0] == row + 1)
-                flag_2 = self.empty_pos[0] == row and (self.empty_pos[1] == col - 1 or self.empty_pos[1] == col + 1)
-                if flag_1 or flag_2:
-                    self.numButtons[j].grid(
-                        row=self.empty_pos[0],
-                        column=self.empty_pos[1],
-                        sticky='nsew'
-                    )
-                    self.empty_pos[0] = row
-                    self.empty_pos[1] = col
+                self.moveButton(j)
                 # check if player've won
                 if self.checkWinning():
                     messagebox.showinfo(message='You win!')
