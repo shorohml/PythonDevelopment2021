@@ -87,10 +87,10 @@ class Application(tk.Frame):
         top = self.winfo_toplevel()
         top.rowconfigure(0, weight=1)
         top.columnconfigure(0, weight=1)
-        self.rowconfigure(0, minsize=30)
+        self.rowconfigure(0)
         for i in range(4):
-            self.rowconfigure(i + 1, weight=1, minsize=30)
-            self.columnconfigure(i, weight=1, minsize=60)
+            self.rowconfigure(i + 1, weight=1)
+            self.columnconfigure(i, weight=1)
 
         # create New button
         self.newButton = tk.Button(self, text='New', command=self.shuffleButtons)
@@ -124,6 +124,12 @@ class Application(tk.Frame):
                 self,
                 text=f'{i + 1}',
                 command=command,
+                width=7,
+            )
+            self.numButtons[i].grid(
+                row=i//4 + 1,
+                column=i%4,
+                sticky='nsew'
             )
         self.shuffleButtons()
 
