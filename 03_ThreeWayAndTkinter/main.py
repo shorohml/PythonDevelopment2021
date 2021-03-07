@@ -46,7 +46,19 @@ class Application(tk.Frame):
         for i in range(15):
 
             def command(j=i):
-                pass
+                # move button to emty position if possible
+                grid_info = self.numButtons[j].grid_info()
+                row, col = grid_info['row'], grid_info['column']
+                flag_1 = empty_pos[1] == col and (empty_pos[0] == row - 1 or empty_pos[0] == row + 1)
+                flag_2 = empty_pos[0] == row and (empty_pos[1] == col - 1 or empty_pos[1] == col + 1)
+                if flag_1 or flag_2:
+                    self.numButtons[j].grid(
+                        row=empty_pos[0],
+                        column=empty_pos[1],
+                        sticky='nsew'
+                    )
+                    empty_pos[0] = row
+                    empty_pos[1] = col
 
             self.numButtons[i] = tk.Button(
                 self,
