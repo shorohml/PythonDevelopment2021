@@ -1,4 +1,5 @@
 import tkinter as tk
+from random import shuffle
 
 
 class Application(tk.Frame):
@@ -13,9 +14,10 @@ class Application(tk.Frame):
         top = self.winfo_toplevel()
         top.rowconfigure(0, weight=1)
         top.columnconfigure(0, weight=1)
+        self.rowconfigure(0, minsize=30)
         for i in range(4):
-            self.rowconfigure(i + 1, weight=1)
-            self.columnconfigure(i, weight=1)
+            self.rowconfigure(i + 1, weight=1, minsize=30)
+            self.columnconfigure(i, weight=1, minsize=60)
 
         # create New button
         self.newButton = tk.Button(self, text='New')
@@ -32,14 +34,28 @@ class Application(tk.Frame):
             column=2,
             columnspan=2,
         )
-
+ 
         # create buttons with numbers for game logic
-        self.numButtons = []
+        buttons_idx = list(range(16))
+        shuffle(buttons_idx)
+        self.numButtons = [None]*15
+        empty_pos = [
+            buttons_idx[-1]//4 + 1,
+            buttons_idx[-1]%4
+        ]
         for i in range(15):
-            self.numButtons.append(tk.Button(self, text=f'{i + 1}'))
-            self.numButtons[-1].grid(
-                row=i//4 + 1,
-                column=i%4,
+
+            def command(j=i):
+                pass
+
+            self.numButtons[i] = tk.Button(
+                self,
+                text=f'{i + 1}',
+                command=command,
+            )
+            self.numButtons[i].grid(
+                row=buttons_idx[i]//4 + 1,
+                column=buttons_idx[i]%4,
                 sticky='nsew'
             )
 
