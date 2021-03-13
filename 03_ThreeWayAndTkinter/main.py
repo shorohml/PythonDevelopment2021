@@ -20,13 +20,11 @@ def isSolvable(buttonsIdx: List[int]) -> bool:
         if ranking[i] is None:
             nSum += i//4 + 1
             continue
-        count = 0
         for j in range(i + 1, 16):
             if ranking[j] is None:
                 continue
             if ranking[j] < ranking[i]:
-                count += 1
-        nSum += count
+                nSum += 1
     return nSum % 2 == 0
 
 
@@ -52,6 +50,8 @@ class Application(tk.Frame): # pylint: disable=too-many-ancestors
 
     def __init__(self, master=None):
         super().__init__(master)
+        self.master.rowconfigure(0, weight=1)
+        self.master.columnconfigure(0, weight=1)
         self.grid(sticky='nsew')
         self.createWidgets()
 
@@ -116,9 +116,6 @@ class Application(tk.Frame): # pylint: disable=too-many-ancestors
         Create application widgets.
         """
         # set rows/columns weights to make stretchable interface
-        top = self.winfo_toplevel()
-        top.rowconfigure(0, weight=1)
-        top.columnconfigure(0, weight=1)
         self.rowconfigure(0)
         for i in range(4):
             self.rowconfigure(i + 1, weight=1)
